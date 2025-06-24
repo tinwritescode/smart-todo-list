@@ -5,6 +5,10 @@ alwaysApply: true
 ---
 Don't try to change the existing working UI.
 
-I prefer shadnUI style, radix UI.
+I prefer radix UI mix with tailwindCSS.
 
 Use bun as package manager.
+
+Don't use shadnUI button, use radix buttons instead. Prioritize to use radixUI than others.
+
+Use shadnUI input instead of radix UI input.

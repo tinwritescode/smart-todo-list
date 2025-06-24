@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 import { ActivityHeatmap } from "./ActivityHeatmap";
+import { Button } from "@radix-ui/themes";
 
 export function AchievementsPage() {
   const [filter, setFilter] = useState<"all" | "unlocked" | "locked">("all");
@@ -54,7 +55,7 @@ export function AchievementsPage() {
       </div>
 
       {/* Stats Summary */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border">
+      <div className="bg-white p-6 rounded-lg border shadow-sm">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Your Stats</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
@@ -96,7 +97,7 @@ export function AchievementsPage() {
 
       {/* Recent Achievements */}
       {recentAchievements && recentAchievements.length > 0 && (
-        <div className="bg-white p-6 rounded-lg border">
+        <div className="bg-white p-6 rounded-lg border shadow-sm">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Recent Achievements
           </h2>
@@ -128,17 +129,14 @@ export function AchievementsPage() {
           { key: "unlocked", label: "Unlocked" },
           { key: "locked", label: "Locked" },
         ].map((filterOption) => (
-          <button
+          <Button
             key={filterOption.key}
             onClick={() => setFilter(filterOption.key as any)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filter === filterOption.key
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+            variant={filter === filterOption.key ? "soft" : "ghost"}
+            size="2"
           >
             {filterOption.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -149,7 +147,10 @@ export function AchievementsPage() {
             if (categoryAchievements.length === 0) return null;
 
             return (
-              <div key={categoryName}>
+              <div
+                key={categoryName}
+                className="bg-white p-6 rounded-lg border shadow-sm"
+              >
                 <h2 className="text-xl font-semibold text-gray-800 mb-4 capitalize">
                   {categoryName === "milestone" && "🎯 Milestones"}
                   {categoryName === "streak" && "🔥 Streaks"}
