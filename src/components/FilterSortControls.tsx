@@ -13,26 +13,26 @@ interface FilterSortControlsProps {
   };
 }
 
-export function FilterSortControls({ 
-  currentFilter, 
-  currentSort, 
-  onFilterChange, 
+export function FilterSortControls({
+  currentFilter,
+  currentSort,
+  onFilterChange,
   onSortChange,
-  taskCounts 
+  taskCounts,
 }: FilterSortControlsProps) {
   const filters = [
-    { key: 'all', label: 'All Tasks', count: taskCounts.all },
-    { key: 'today', label: 'Today', count: taskCounts.today },
-    { key: 'overdue', label: 'Overdue', count: taskCounts.overdue },
-    { key: 'completed', label: 'Completed', count: taskCounts.completed },
-    { key: 'unscheduled', label: 'Unscheduled', count: taskCounts.unscheduled },
-    { key: 'past', label: 'Past Tasks', count: taskCounts.past },
+    { key: "all", label: "All Tasks", count: taskCounts.all },
+    { key: "today", label: "Today", count: taskCounts.today },
+    { key: "overdue", label: "Overdue", count: taskCounts.overdue },
+    { key: "completed", label: "Completed", count: taskCounts.completed },
+    { key: "unscheduled", label: "Unscheduled", count: taskCounts.unscheduled },
+    { key: "past", label: "Past Tasks", count: taskCounts.past },
   ];
 
   const sorts = [
-    { key: 'dueTime', label: 'Due Time' },
-    { key: 'createdTime', label: 'Created' },
-    { key: 'manual', label: 'Manual' },
+    { key: "dueTime", label: "Due Time" },
+    { key: "createdTime", label: "Created" },
+    { key: "manual", label: "Manual" },
   ];
 
   return (
@@ -50,17 +50,19 @@ export function FilterSortControls({
                 onClick={() => onFilterChange(filter.key)}
                 className={`px-3 py-1 text-sm rounded-full border transition-colors ${
                   currentFilter === filter.key
-                    ? 'bg-blue-100 border-blue-300 text-blue-700'
-                    : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                    ? "bg-blue-100 border-blue-300 text-blue-700"
+                    : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
                 }`}
               >
                 {filter.label}
                 {filter.count > 0 && (
-                  <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-full ${
-                    currentFilter === filter.key
-                      ? 'bg-blue-200 text-blue-800'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}>
+                  <span
+                    className={`ml-1 px-1.5 py-0.5 text-xs rounded-full ${
+                      currentFilter === filter.key
+                        ? "bg-blue-200 text-blue-800"
+                        : "bg-gray-200 text-gray-600"
+                    }`}
+                  >
                     {filter.count}
                   </span>
                 )}

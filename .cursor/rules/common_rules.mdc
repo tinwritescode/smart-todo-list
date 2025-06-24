@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Don't try to change the existing working UI.
+
+I prefer shadnUI style, radix UI.
+
+Use bun as package manager.

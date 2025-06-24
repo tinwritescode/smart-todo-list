@@ -1,4 +1,9 @@
-import { query, mutation } from "./_generated/server";
+import {
+  query,
+  mutation,
+  internalQuery,
+  internalMutation,
+} from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
@@ -295,6 +300,26 @@ export const getUserSettings = query({
       settings || {
         rollOverTasks: false,
         lastResetDate: getTodayString(),
+        lastActiveTime: Date.now(),
+      }
+    );
+  },
+});
+
+// Internal query to get user settings by userId
+export const getUserSettingsById = internalQuery({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const settings = await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .unique();
+
+    return (
+      settings || {
+        rollOverTasks: false,
+        lastResetDate: getTodayString(),
+        lastActiveTime: Date.now(),
       }
     );
   },
@@ -304,6 +329,7 @@ export const updateUserSettings = mutation({
   args: {
     rollOverTasks: v.optional(v.boolean()),
     lastResetDate: v.optional(v.string()),
+    lastActiveTime: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -322,12 +348,14 @@ export const updateUserSettings = mutation({
           rollOverTasks: args.rollOverTasks,
         }),
         ...(args.lastResetDate && { lastResetDate: args.lastResetDate }),
+        ...(args.lastActiveTime && { lastActiveTime: args.lastActiveTime }),
       });
     } else {
       await ctx.db.insert("userSettings", {
         userId,
         rollOverTasks: args.rollOverTasks || false,
         lastResetDate: args.lastResetDate || getTodayString(),
+        lastActiveTime: args.lastActiveTime || Date.now(),
       });
     }
   },
@@ -351,6 +379,65 @@ export const updateText = mutation({
 
     await ctx.db.patch(args.id, {
       text: args.text,
+    });
+  },
+});
+
+export const updateDueTime = mutation({
+  args: {
+    id: v.id("todos"),
+    dueTime: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const { id, dueTime } = args;
+
+    const todo = await ctx.db.get(id);
+    if (!todo) {
+      throw new Error("Todo not found");
+    }
+
+    await ctx.db.patch(id, {
+      dueTime,
+      isOverdue: dueTime < Date.now(),
+    });
+
+    return null;
+  },
+});
+
+export const getUsersWithPendingTasks = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    const users = await ctx.db.query("todos").withIndex("by_user").collect();
+
+    const userTaskCounts = new Map();
+    for (const todo of users) {
+      if (!todo.isCompleted) {
+        const count = userTaskCounts.get(todo.userId) || 0;
+        userTaskCounts.set(todo.userId, count + 1);
+      }
+    }
+
+    return Array.from(userTaskCounts.entries()).map(
+      ([userId, pendingCount]) => ({
+        userId,
+        pendingCount,
+      })
+    );
+  },
+});
+
+export const addNotification = internalMutation({
+  args: {
+    userId: v.id("users"),
+    message: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("notifications", {
+      userId: args.userId,
+      message: args.message,
+      isRead: false,
+      createdAt: Date.now(),
     });
   },
 });

@@ -42,5 +42,6 @@ window.addEventListener('message', async (message) => {
   },
   server: {
     host: true,
+    port: 8173,
   },
 }));

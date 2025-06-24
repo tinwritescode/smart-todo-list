@@ -15,7 +15,9 @@ import type {
 } from "convex/server";
 import type * as achievements from "../achievements.js";
 import type * as auth from "../auth.js";
+import type * as crons from "../crons.js";
 import type * as http from "../http.js";
+import type * as notifications from "../notifications.js";
 import type * as router from "../router.js";
 import type * as todos from "../todos.js";
 
@@ -30,7 +32,9 @@ import type * as todos from "../todos.js";
 declare const fullApi: ApiFromModules<{
   achievements: typeof achievements;
   auth: typeof auth;
+  crons: typeof crons;
   http: typeof http;
+  notifications: typeof notifications;
   router: typeof router;
   todos: typeof todos;
 }>;

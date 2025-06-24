@@ -16,13 +16,13 @@ const applicationTables = {
     .index("by_user_and_due_time", ["userId", "dueTime"])
     .index("by_user_and_completed", ["userId", "isCompleted"])
     .index("by_user_and_date", ["userId", "createdDate"]),
-  
+
   userSettings: defineTable({
     userId: v.id("users"),
     rollOverTasks: v.boolean(),
     lastResetDate: v.string(), // YYYY-MM-DD format
-  })
-    .index("by_user", ["userId"]),
+    lastActiveTime: v.number(), // Timestamp of last activity
+  }).index("by_user", ["userId"]),
 
   userStats: defineTable({
     userId: v.id("users"),
@@ -36,8 +36,7 @@ const applicationTables = {
     weekendCompletions: v.number(),
     lastCompletionDate: v.optional(v.string()),
     dailyCompletions: v.record(v.string(), v.number()), // date -> count
-  })
-    .index("by_user", ["userId"]),
+  }).index("by_user", ["userId"]),
 
   userAchievements: defineTable({
     userId: v.id("users"),
@@ -52,4 +51,10 @@ const applicationTables = {
 export default defineSchema({
   ...authTables,
   ...applicationTables,
+  notifications: defineTable({
+    userId: v.id("users"),
+    message: v.string(),
+    isRead: v.boolean(),
+    createdAt: v.number(),
+  }).index("by_user", ["userId"]),
 });
