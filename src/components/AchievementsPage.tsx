@@ -6,7 +6,7 @@ import { Button } from "@radix-ui/themes";
 
 export function AchievementsPage() {
   const [filter, setFilter] = useState<"all" | "unlocked" | "locked">("all");
-  const userStats = useQuery(api.achievements.getUserStats);
+  const userStats = useQuery(api.achievements.getUserStats, {});
   const achievements = useQuery(api.achievements.getUserAchievements);
   const recentAchievements = useQuery(api.achievements.getRecentAchievements);
 
@@ -102,22 +102,24 @@ export function AchievementsPage() {
             Recent Achievements
           </h2>
           <div className="flex flex-wrap gap-3">
-            {recentAchievements.map((achievement) => (
-              <div
-                key={achievement.id}
-                className="flex items-center gap-2 bg-green-50 border border-green-200 px-3 py-2 rounded-lg"
-              >
-                <span className="text-xl">{achievement.icon}</span>
-                <div>
-                  <div className="font-medium text-green-800">
-                    {achievement.title}
-                  </div>
-                  <div className="text-xs text-green-600">
-                    {new Date(achievement.unlockedAt).toLocaleDateString()}
+            {recentAchievements
+              .filter((a): a is NonNullable<typeof a> => a !== null)
+              .map((achievement) => (
+                <div
+                  key={achievement.id}
+                  className="flex items-center gap-2 bg-green-50 border border-green-200 px-3 py-2 rounded-lg"
+                >
+                  <span className="text-xl">{achievement.icon}</span>
+                  <div>
+                    <div className="font-medium text-green-800">
+                      {achievement.title}
+                    </div>
+                    <div className="text-xs text-green-600">
+                      {new Date(achievement.unlockedAt).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       )}

@@ -78,11 +78,9 @@ export function TodoApp({ currentFilter, currentSort }: TodoAppProps) {
         sendNotification("Task completed!");
 
         // Check for new achievements
-        const newAchievements = await checkAchievements();
-        if (newAchievements && newAchievements.length > 0) {
-          setNewAchievement(newAchievements[0]);
-          sendNotification("New achievement unlocked! 🏆");
-        }
+        await checkAchievements();
+        // Achievement notifications will be handled through the notifications system
+        sendNotification("Tasks completed! Check for new achievements 🏆");
       }
     } catch (error) {
       toast.error("Failed to update todo");

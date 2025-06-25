@@ -1,10 +1,15 @@
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useMemo } from "react";
+import { Id } from "../../convex/_generated/dataModel";
 
 interface HeatmapCellProps {
   count: number;
   date: string;
+}
+
+interface ActivityHeatmapProps {
+  userId?: Id<"users">;
 }
 
 function HeatmapCell({ count, date }: HeatmapCellProps) {
@@ -25,8 +30,11 @@ function HeatmapCell({ count, date }: HeatmapCellProps) {
   );
 }
 
-export function ActivityHeatmap() {
-  const userStats = useQuery(api.achievements.getUserStats);
+export function ActivityHeatmap({ userId }: ActivityHeatmapProps) {
+  const userStats = useQuery(
+    api.achievements.getUserStats,
+    userId ? { userId } : "skip"
+  );
 
   const heatmapData = useMemo(() => {
     if (!userStats?.dailyCompletions) return [];

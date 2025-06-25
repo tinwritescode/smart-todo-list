@@ -8,6 +8,8 @@ import Layout from "./components/Layout";
 const TodosPage = lazy(() => import("./pages/TodosPage"));
 const AchievementsPage = lazy(() => import("./pages/AchievementsPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const EditProfilePage = lazy(() => import("./pages/EditProfilePage"));
 
 // Loading fallback
 const LoadingFallback = () => (
@@ -43,6 +45,15 @@ export default function App() {
                 </Authenticated>
               }
             />
+            <Route
+              path="/profile/edit"
+              element={
+                <Authenticated>
+                  <EditProfilePage />
+                </Authenticated>
+              }
+            />
+            <Route path="/profile/:username" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

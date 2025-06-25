@@ -3,6 +3,24 @@ import { v } from "convex/values";
 import { authTables } from "@convex-dev/auth/server";
 
 const applicationTables = {
+  userProfile: defineTable({
+    userId: v.id("users"),
+    username: v.string(),
+    bio: v.optional(v.string()),
+    avatarUrl: v.optional(v.string()),
+    socialLinks: v.optional(
+      v.array(
+        v.object({
+          platform: v.string(),
+          url: v.string(),
+        })
+      )
+    ),
+    isPublic: v.boolean(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_username", ["username"]),
+
   todos: defineTable({
     userId: v.id("users"),
     text: v.string(),
@@ -11,6 +29,7 @@ const applicationTables = {
     isOverdue: v.boolean(),
     createdDate: v.optional(v.string()), // YYYY-MM-DD format for daily reset
     order: v.optional(v.number()), // For manual ordering
+    completedAt: v.optional(v.number()), // Timestamp when the todo was completed
   })
     .index("by_user", ["userId"])
     .index("by_user_and_due_time", ["userId", "dueTime"])

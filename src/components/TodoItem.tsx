@@ -15,6 +15,7 @@ interface TodoItemProps {
     isCompleted: boolean;
     isOverdue: boolean;
     createdDate?: string;
+    completedAt?: number;
   };
   onToggle: (id: Id<"todos">) => void;
   onSnooze: (id: Id<"todos">) => void;
@@ -134,6 +135,16 @@ export function TodoItem({
             {todo.createdDate && (
               <span className="text-xs text-gray-400">
                 Created: {new Date(todo.createdDate).toLocaleDateString()}
+              </span>
+            )}
+            {todo.completedAt && (
+              <span className="text-xs text-gray-400">
+                Completed: {new Date(todo.completedAt).toLocaleString()}
+                {todo.dueTime && (
+                  <span className="ml-1">
+                    ({todo.completedAt <= todo.dueTime ? "on time" : "late"})
+                  </span>
+                )}
               </span>
             )}
           </div>

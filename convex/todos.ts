@@ -209,6 +209,7 @@ export const toggle = mutation({
     await ctx.db.patch(args.id, {
       isCompleted: !todo.isCompleted,
       isOverdue: false, // Reset overdue when completing
+      completedAt: !todo.isCompleted ? Date.now() : undefined, // Set completedAt when completing, clear when uncompleting
     });
   },
 });
@@ -439,5 +440,102 @@ export const addNotification = internalMutation({
       isRead: false,
       createdAt: Date.now(),
     });
+  },
+});
+
+export const getUserProfile = query({
+  args: { username: v.string() },
+  handler: async (ctx, { username }) => {
+    const profile = await ctx.db
+      .query("userProfile")
+      .withIndex("by_username", (q) => q.eq("username", username))
+      .first();
+
+    if (!profile || !profile.isPublic) {
+      return null;
+    }
+
+    const stats = await ctx.db
+      .query("userStats")
+      .withIndex("by_user", (q) => q.eq("userId", profile.userId))
+      .first();
+
+    return { profile, stats };
+  },
+});
+
+export const updateUserProfile = mutation({
+  args: {
+    username: v.string(),
+    bio: v.optional(v.string()),
+    avatarUrl: v.optional(v.string()),
+    socialLinks: v.optional(
+      v.array(
+        v.object({
+          platform: v.string(),
+          url: v.string(),
+        })
+      )
+    ),
+    isPublic: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const existing = await ctx.db
+      .query("userProfile")
+      .withIndex("by_username", (q) => q.eq("username", args.username))
+      .first();
+
+    if (existing && existing.userId !== userId) {
+      throw new Error("Username already taken");
+    }
+
+    const profile = await ctx.db
+      .query("userProfile")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (!profile) {
+      return await ctx.db.insert("userProfile", {
+        userId,
+        username: args.username,
+        bio: args.bio,
+        avatarUrl: args.avatarUrl,
+        socialLinks: args.socialLinks,
+        isPublic: args.isPublic ?? true,
+      });
+    }
+
+    return await ctx.db.patch(profile._id, {
+      username: args.username,
+      bio: args.bio,
+      avatarUrl: args.avatarUrl,
+      socialLinks: args.socialLinks,
+      isPublic: args.isPublic,
+    });
+  },
+});
+
+export const getCurrentUserProfile = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const profile = await ctx.db
+      .query("userProfile")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (!profile) return null;
+
+    const stats = await ctx.db
+      .query("userStats")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    return { profile, stats };
   },
 });

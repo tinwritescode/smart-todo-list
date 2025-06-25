@@ -17,6 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   const loggedInUser = useQuery(api.auth.loggedInUser);
+  const profile = useQuery(api.todos.getCurrentUserProfile);
   const updateUserSettings = useMutation(api.todos.updateUserSettings);
 
   // Update last active time when user interacts with the app
@@ -142,6 +143,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Button>
 
               <Authenticated>
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="2"
+                  className={cn(
+                    "w-full justify-start hover:bg-gray-100 transition-colors",
+                    (location.pathname === "/profile" ||
+                      location.pathname.startsWith("/profile/")) &&
+                      "bg-gray-100 font-medium"
+                  )}
+                >
+                  <Link
+                    to={
+                      profile?.profile
+                        ? `/profile/${profile.profile.username}`
+                        : "/profile/edit"
+                    }
+                  >
+                    <div className="flex items-center gap-3 px-2 py-1">
+                      <span className="text-xl text-gray-700">👤</span>
+                      <span className="font-medium text-gray-900">Profile</span>
+                    </div>
+                  </Link>
+                </Button>
+
                 {location.pathname === "/" && (
                   <div className="mt-3 space-y-2">
                     <Button
